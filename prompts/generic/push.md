@@ -30,6 +30,8 @@ Analyze the following push event and provide insights:
    - Branch management recommendations
 
 3. **Actions** (only if verified as real):
+   - **Add a commit comment** summarizing your analysis using `gh api repos/{{repository.full_name}}/commits/{{commits.0.id}}/comments --method POST --field body="Your analysis comment"`
+   - Include impact assessment, code quality observations, and any recommendations in the comment
    - If this is a direct push to main/master, consider suggesting branch protection using `gh api repos/{{repository.full_name}}/branches/main/protection --method PUT`
    - If commits have poor messages, suggest creating a commit message guideline issue
    - If there are potential security issues, create a security issue or alert
