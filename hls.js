@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 const Handlebars = require('handlebars');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 const app = express();
 const PORT = 4665; // HOOK on phone keypad
@@ -320,6 +322,16 @@ app.post('/webhook', (req, res) => {
     }
   );
 });
+
+// Swagger API documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+  customSiteTitle: 'Hook Line Sinker API',
+  customCss: '.swagger-ui .topbar { display: none; }',
+  swaggerOptions: {
+    docExpansion: 'none',
+    defaultModelsExpandDepth: -1
+  }
+}));
 
 // API endpoint to get webhook history
 app.get('/api/webhooks', (req, res) => {
@@ -2189,12 +2201,15 @@ app.get('/', (req, res) => {
             <h1>🎣 Hook Line Sinker</h1>
             <div class="subtitle">GitHub Webhook Monitor</div>
             <div class="webhook-url">Webhook URL: <span id="webhookUrl"></span>/webhook</div>
-            <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center;">
+            <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                 <a href="/events" style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 1rem; background: rgba(0,0,0,0.3); padding: 0.5rem 1rem; border-radius: 0.25rem; display: inline-block;">
                     📚 GitHub Events Reference
                 </a>
                 <a href="/prompts" style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 1rem; background: rgba(0,0,0,0.3); padding: 0.5rem 1rem; border-radius: 0.25rem; display: inline-block;">
                     🤖 Prompt Management
+                </a>
+                <a href="/api-docs" style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 1rem; background: rgba(0,0,0,0.3); padding: 0.5rem 1rem; border-radius: 0.25rem; display: inline-block;">
+                    🔗 API Documentation
                 </a>
             </div>
         </header>

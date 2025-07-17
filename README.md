@@ -7,6 +7,7 @@ A comprehensive GitHub webhook monitoring service with Claude AI integration for
 - **Web Interface**: https://hls.zpaper.com/
 - **Webhook Endpoint**: https://hls.zpaper.com/webhook
 - **Health Check**: https://hls.zpaper.com/health
+- **API Documentation**: https://hls.zpaper.com/api-docs
 - **Events Documentation**: https://hls.zpaper.com/events
 - **Prompt Management**: https://hls.zpaper.com/prompts
 
