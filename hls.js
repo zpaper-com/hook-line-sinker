@@ -2202,6 +2202,9 @@ app.get('/', (req, res) => {
             <div class="subtitle">GitHub Webhook Monitor</div>
             <div class="webhook-url">Webhook URL: <span id="webhookUrl"></span>/webhook</div>
             <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button onclick="showWebhookSetupModal()" style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 1rem; background: rgba(31, 111, 235, 0.8); border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; display: inline-block; cursor: pointer; transition: background 0.2s;">
+                    ⚙️ Setup GitHub Webhook
+                </button>
                 <a href="/events" style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 1rem; background: rgba(0,0,0,0.3); padding: 0.5rem 1rem; border-radius: 0.25rem; display: inline-block;">
                     📚 GitHub Events Reference
                 </a>
@@ -2688,7 +2691,182 @@ app.get('/', (req, res) => {
             }
             status.style.color = '#8b949e';
         }
+
+        // Webhook setup modal functions
+        function showWebhookSetupModal() {
+            document.getElementById('webhookSetupModal').style.display = 'block';
+        }
+
+        function closeWebhookSetupModal() {
+            document.getElementById('webhookSetupModal').style.display = 'none';
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show temporary success feedback
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#2ea043';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#1f6feb';
+                }, 2000);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('webhookSetupModal');
+            const detailModal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeWebhookSetupModal();
+            }
+            if (event.target === detailModal) {
+                closeModal();
+            }
+        }
     </script>
+
+    <!-- Webhook Setup Modal -->
+    <div id="webhookSetupModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2>⚙️ GitHub Webhook Setup Guide</h2>
+                <button class="close-btn" onclick="closeWebhookSetupModal()">&times;</button>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h3>📋 Quick Setup</h3>
+                <div style="background: #0d1117; padding: 1rem; border-radius: 0.5rem; border: 1px solid #30363d; margin-bottom: 1rem;">
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Webhook URL:</strong>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem;">
+                            <code style="background: #21262d; padding: 0.5rem; border-radius: 0.25rem; flex: 1;">https://hls.zpaper.com/webhook</code>
+                            <button onclick="copyToClipboard('https://hls.zpaper.com/webhook')" style="background: #1f6feb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">Copy URL</button>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Webhook Secret:</strong>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem;">
+                            <code style="background: #21262d; padding: 0.5rem; border-radius: 0.25rem; flex: 1; font-size: 0.75rem;">0eafeebff81353f861742e1391ba371f045d1fbc586f9033f8e789954c7c9733</code>
+                            <button onclick="copyToClipboard('0eafeebff81353f861742e1391ba371f045d1fbc586f9033f8e789954c7c9733')" style="background: #1f6feb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">Copy Secret</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3>🏢 Organization-Level Webhook (Recommended)</h3>
+                <div style="background: rgba(31, 111, 235, 0.1); padding: 1rem; border-radius: 0.5rem; border: 1px solid rgba(31, 111, 235, 0.3); margin-bottom: 1rem;">
+                    <p style="margin: 0; color: #58a6ff;"><strong>Best for:</strong> zpaper-com and shawn-storie organizations - covers ALL repositories automatically</p>
+                </div>
+                <ol style="margin-left: 1.5rem;">
+                    <li>Go to your GitHub organization page</li>
+                    <li>Click <strong>Settings</strong> → <strong>Webhooks</strong></li>
+                    <li>Click <strong>Add webhook</strong></li>
+                    <li>Configure the webhook:
+                        <ul style="margin-top: 0.5rem;">
+                            <li><strong>Payload URL:</strong> <code>https://hls.zpaper.com/webhook</code></li>
+                            <li><strong>Content type:</strong> <code>application/json</code></li>
+                            <li><strong>Secret:</strong> Use the secret above</li>
+                            <li><strong>Which events:</strong> Select "Send me everything"</li>
+                            <li><strong>Active:</strong> ✅ Checked</li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>Add webhook</strong></li>
+                </ol>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3>📁 Repository-Level Webhook</h3>
+                <div style="background: rgba(255, 212, 0, 0.1); padding: 1rem; border-radius: 0.5rem; border: 1px solid rgba(255, 212, 0, 0.3); margin-bottom: 1rem;">
+                    <p style="margin: 0; color: #f0c040;"><strong>Use when:</strong> You want to monitor specific repositories only</p>
+                </div>
+                <ol style="margin-left: 1.5rem;">
+                    <li>Go to your repository on GitHub</li>
+                    <li>Click <strong>Settings</strong> → <strong>Webhooks</strong></li>
+                    <li>Click <strong>Add webhook</strong></li>
+                    <li>Use the same configuration as above</li>
+                </ol>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3>🤖 What Happens Next?</h3>
+                <div style="background: #0d1117; padding: 1rem; border-radius: 0.5rem; border: 1px solid #30363d;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div>
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚡</div>
+                            <strong>Instant Processing</strong>
+                            <div style="font-size: 0.875rem; color: #8b949e;">All GitHub events are captured in real-time</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤖</div>
+                            <strong>Claude Auto-Analysis</strong>
+                            <div style="font-size: 0.875rem; color: #8b949e;">Every event triggers Claude AI analysis</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔄</div>
+                            <strong>GitHub Actions</strong>
+                            <div style="font-size: 0.875rem; color: #8b949e;">Automated labels, assignments, comments</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📊</div>
+                            <strong>Web Dashboard</strong>
+                            <div style="font-size: 0.875rem; color: #8b949e;">Monitor all activity from this interface</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <h3>🔧 Troubleshooting</h3>
+                <details style="background: #0d1117; padding: 1rem; border-radius: 0.5rem; border: 1px solid #30363d;">
+                    <summary style="cursor: pointer; font-weight: bold; color: #58a6ff;">Common Issues & Solutions</summary>
+                    <div style="margin-top: 1rem;">
+                        <p><strong>Webhook not receiving events:</strong></p>
+                        <ul>
+                            <li>Check webhook delivery history in GitHub settings</li>
+                            <li>Verify the URL is exactly: <code>https://hls.zpaper.com/webhook</code></li>
+                            <li>Ensure "application/json" content type is selected</li>
+                        </ul>
+                        
+                        <p><strong>Signature verification failing:</strong></p>
+                        <ul>
+                            <li>Double-check the webhook secret matches exactly</li>
+                            <li>Make sure there are no extra spaces in the secret</li>
+                        </ul>
+                        
+                        <p><strong>Events not appearing:</strong></p>
+                        <ul>
+                            <li>Check that "Send me everything" is selected</li>
+                            <li>Or manually select specific events like "Issues", "Pull requests", "Pushes"</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+
+            <div style="text-align: center; padding: 1rem; background: rgba(46, 160, 67, 0.1); border-radius: 0.5rem; border: 1px solid rgba(46, 160, 67, 0.3);">
+                <p style="margin: 0; color: #2ea043;"><strong>✅ Ready to go!</strong> After setting up your webhook, all GitHub events will be automatically processed with Claude AI analysis.</p>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
   `);
